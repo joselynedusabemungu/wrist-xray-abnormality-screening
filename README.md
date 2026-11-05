@@ -1,4 +1,4 @@
-# Wrist X-ray Abnormality Screening — Portfolio Prototype
+# Wrist X-ray Abnormality Screening
 
 *A prototype. Not a diagnostic tool. Not clinically validated. Never use on real patient data.*
 
