@@ -1,5 +1,5 @@
-torch==2.5.1
-torchvision==0.20.1
+torch --index-url https://pytorch.org
+torchvision --index-url https://pytorch.org
 numpy==1.26.4
 pandas==2.2.3
 Pillow==11.0.0
@@ -8,7 +8,3 @@ scikit-image==0.24.0
 matplotlib==3.9.2
 joblib==1.4.2
 streamlit==1.40.1
-jupyter==1.1.1
-ipykernel==6.29.5
-nbformat==5.10.4
-nbconvert==7.16.4
