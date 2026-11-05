@@ -1,0 +1,24 @@
+# MURA is licensed for research use and must NOT be redistributed
+MURA-v1.1/
+data/
+*.zip
+
+# Model weights (regenerate with `make train-all`)
+models/*
+!models/.gitkeep
+outputs/artifacts/
+
+# Prediction dumps (regenerated; contain local file paths)
+outputs/*_predictions.npz
+
+# Python / env
+__pycache__/
+*.pyc
+.venv/
+venv/
+.ipynb_checkpoints/
+.pytest_cache/
+.DS_Store
+
+# Streamlit
+.streamlit/secrets.toml
