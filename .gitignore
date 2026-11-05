@@ -22,3 +22,5 @@ venv/
 
 # Streamlit
 .streamlit/secrets.toml
+outputs/data_summary.json
+outputs/unreadable_images.json

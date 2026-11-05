@@ -21,19 +21,19 @@ A missed abnormal study (false negative) delays care; false alarms waste clinici
 
 ## Training data
 
-MURA v1.1 `XR_WRIST`, patient-level split; train {{N_TRAIN_IMAGES}} images ({{TRAIN_PCT_ABNORMAL}} abnormal) from {{N_TRAIN_PATIENTS}} patients; validation {{N_VAL_IMAGES}} images. See [`DATA_CARD.md`](DATA_CARD.md) for provenance, licence and biases, notably: single hospital, study-level labels, heterogeneous "abnormal", no demographic subgroup data.
+MURA v1.1 `XR_WRIST`, patient-level split; train 2,217 images (39.5% abnormal) from 740 patients; validation 386 images. See [`DATA_CARD.md`](DATA_CARD.md) for provenance, licence and biases, notably: single hospital, study-level labels, heterogeneous "abnormal", no demographic subgroup data.
 
-## Performance (test set: official MURA `valid` wrist, {{N_TEST_IMAGES}} images, {{TEST_PCT_ABNORMAL}} abnormal)
+## Performance (test set: official MURA `valid` wrist, 659 images, 44.8% abnormal)
 
 | Metric (threshold 0.5, positive = Abnormal) | ResNet18 | HOG + LR | Grayscale + LR |
 |---|---:|---:|---:|
-| Accuracy | {{RESNET_ACCURACY}} | {{HOG_ACCURACY}} | {{GRAYSCALE_ACCURACY}} |
-| Precision | {{RESNET_PRECISION}} | {{HOG_PRECISION}} | {{GRAYSCALE_PRECISION}} |
-| Recall | {{RESNET_RECALL}} | {{HOG_RECALL}} | {{GRAYSCALE_RECALL}} |
-| F1 | {{RESNET_F1}} | {{HOG_F1}} | {{GRAYSCALE_F1}} |
-| ROC-AUC | {{RESNET_AUC}} | {{HOG_AUC}} | {{GRAYSCALE_AUC}} |
+| Accuracy | 0.765 | 0.683 | 0.548 |
+| Precision | 0.898 | 0.657 | 0.495 |
+| Recall | 0.536 | 0.610 | 0.498 |
+| F1 | 0.671 | 0.633 | 0.497 |
+| ROC-AUC | 0.847 | 0.710 | 0.570 |
 
-Recall-target operating point (chosen on validation): threshold {{OP_THRESHOLD}} gives test recall {{OP_TEST_RECALL}} at precision {{OP_TEST_PRECISION}}. Calibration error (ECE): {{ECE}}. Abstention band [{{ABSTAIN_LOW}}, {{ABSTAIN_HIGH}}) abstains on {{ABSTAIN_FRACTION}} of test images; {{AUTO_CLEAR_MISS_RATE}} of auto-cleared images are abnormal. Methodology and caveats: [`EVALUATION.md`](EVALUATION.md).
+Recall-target operating point (chosen on validation): threshold 0.064 gives test recall 0.963 at precision 0.536. Calibration error (ECE): 0.116. Abstention band [0.064, 0.65) abstains on 58.7% of test images; 8.5% of auto-cleared images are abnormal. Methodology and caveats: [`EVALUATION.md`](EVALUATION.md).
 
 ## Intended use
 

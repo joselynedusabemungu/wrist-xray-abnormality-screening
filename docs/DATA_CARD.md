@@ -15,15 +15,15 @@ The costs of error are lopsided: a missed abnormality delays a patient's care, a
 - **Source:** MURA v1.1 (*musculoskeletal radiographs*), released by the Stanford ML Group. Citation: Rajpurkar et al., "MURA: Large Dataset for Abnormality Detection in Musculoskeletal Radiographs" (arXiv:1712.06957, 2017). This project uses only the `XR_WRIST` folders.
 - **Content:** multi-view radiographs grouped into *studies* (one patient visit/exam), stored as `train/XR_WRIST/patientNNNNN/studyK_positive|negative/imageM.png`.
 - **Labels:** one **study-level** label, encoded in the folder name (`positive` = abnormal, `negative` = normal). According to the dataset authors, labels come from radiologists' interpretation at the time of clinical reading at Stanford; they are not a re-adjudicated gold standard for the training split. Every image inherits its study's label.
-- **Splits used here:** the official `valid` wrist split is the **test** set. Validation ({{N_VAL_IMAGES}} images) is carved out of the official train split by *patient*. Train: {{N_TRAIN_IMAGES}} images from {{N_TRAIN_PATIENTS}} patients. Test: {{N_TEST_IMAGES}} images from {{N_TEST_PATIENTS}} patients.
+- **Splits used here:** the official `valid` wrist split is the **test** set. Validation (386 images) is carved out of the official train split by *patient*. Train: 2,217 images from 740 patients. Test: 659 images from 207 patients.
 - **Verify your copy:** `make data-check` prints the real counts, asserts patient-disjointness, and compares on-disk image counts with the official `*_image_paths.csv` files (a mismatch means a partial download and changes every number downstream).
 
 ## Class balance (computed from your checkout)
 
 | Split | Abnormal share |
 |---|---|
-| Train | {{TRAIN_PCT_ABNORMAL}} |
-| Test | {{TEST_PCT_ABNORMAL}} |
+| Train | 39.5% |
+| Test | 44.8% |
 
 The classes are imbalanced rather than extremely skewed, but that is enough for accuracy to mislead; hence per-class metrics and AUC everywhere. Note that image-level balance differs from study-level balance because studies have different numbers of views.
 

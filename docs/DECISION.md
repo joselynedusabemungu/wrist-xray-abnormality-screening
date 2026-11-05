@@ -18,12 +18,12 @@ Done well, abnormal studies are read sooner and clinicians spend less time on ro
 
 The model produces a score from 0 to 1. Where you draw the line decides which mistake you accept.
 
-| | Default line (0.5) | Safety-first line (recall ≥ {{OP_RECALL_TARGET}}) |
+| | Default line (0.5) | Safety-first line (recall ≥ 0.95) |
 |---|---|---|
-| Line position | 0.500 | {{OP_THRESHOLD}} (chosen on validation data, then frozen) |
-| Abnormal studies caught (recall, test) | {{OP_TEST_RECALL_AT_05}} | {{OP_TEST_RECALL}} |
-| Of flagged studies, truly abnormal (precision, test) | {{OP_TEST_PRECISION_AT_05}} | {{OP_TEST_PRECISION}} |
-| Share of all studies flagged (test) | see `outputs/operating_point_resnet.json` | {{OP_TEST_FLAGGED_FRACTION}} |
+| Line position | 0.500 | 0.064 (chosen on validation data, then frozen) |
+| Abnormal studies caught (recall, test) | 0.536 | 0.963 |
+| Of flagged studies, truly abnormal (precision, test) | 0.898 | 0.536 |
+| Share of all studies flagged (test) | see `outputs/operating_point_resnet.json` | 80.4% |
 
 Reading it: the safety-first line catches more abnormal studies and pays for it in false alarms (lower precision). **Your question:** how many extra normal studies is the practice willing to review to catch one more abnormal one? Clinical leadership, not the model, answers that.
 
@@ -31,11 +31,11 @@ Reading it: the safety-first line catches more abnormal studies and pays for it 
 
 | Score | System says |
 |---|---|
-| below {{ABSTAIN_LOW}} | "Leans normal": a candidate for fast sign-off, never an automatic discharge |
-| {{ABSTAIN_LOW}} to {{ABSTAIN_HIGH}} | "Inconclusive": a person must read it |
-| {{ABSTAIN_HIGH}} or above | "Leans abnormal": read first |
+| below 0.064 | "Leans normal": a candidate for fast sign-off, never an automatic discharge |
+| 0.064 to 0.65 | "Inconclusive": a person must read it |
+| 0.65 or above | "Leans abnormal": read first |
 
-On the test data the band sent **{{ABSTAIN_FRACTION}}** of images to a human. Of the images it would have cleared as normal, **{{AUTO_CLEAR_MISS_RATE}}** were actually abnormal. That last number is the one to bring to your clinical lead: it is the miss rate if anyone trusts "leans normal". The probability is also not guaranteed to be well calibrated (calibration error {{ECE}}); a "90%" is a score, not a 90% chance.
+On the test data the band sent **58.7%** of images to a human. Of the images it would have cleared as normal, **8.5%** were actually abnormal. That last number is the one to bring to your clinical lead: it is the miss rate if anyone trusts "leans normal". The probability is also not guaranteed to be well calibrated (calibration error 0.116); a "90%" is a score, not a 90% chance.
 
 ## Monitoring plan (if it were ever piloted, with consent and oversight)
 
@@ -58,4 +58,4 @@ On the test data the band sent **{{ABSTAIN_FRACTION}}** of images to a human. Of
 
 ## When a simpler tool is the better call
 
-Compare the table in the README. If a HOG + logistic-regression baseline gets close to the ResNet at the same recall target (HOG: recall {{HOG_OP_TEST_RECALL}}, precision {{HOG_OP_TEST_PRECISION}}), prefer it: it is faster, cheaper, and its behaviour can be inspected. If neither beats "oldest first, plus a clinician's urgent flag" by enough to justify the validation and monitoring burden, the right answer is not to use ML at all.
+Compare the table in the README. If a HOG + logistic-regression baseline gets close to the ResNet at the same recall target (HOG: recall 0.868, precision 0.507), prefer it: it is faster, cheaper, and its behaviour can be inspected. If neither beats "oldest first, plus a clinician's urgent flag" by enough to justify the validation and monitoring burden, the right answer is not to use ML at all.

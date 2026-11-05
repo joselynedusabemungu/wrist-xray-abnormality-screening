@@ -13,13 +13,13 @@ The cost of errors is lopsided. A missed abnormal study delays care; a false ala
 ## 1. Data discipline (so the numbers mean something)
 
 - **Patient-level split.** Images from one patient are near-duplicates. If a patient appears in both train and test, the test score measures memorisation. `mura_utils.assert_no_patient_leakage` raises an error if any patient is in more than one split. `make data-check` prints the real counts and the result of that check.
-- **Three roles for three splits.** Train fits the model. Validation ({{N_VAL_IMAGES}} images, held-out *patients* from the official train set) chooses regularisation (classical models), stops training (ResNet) and chooses thresholds. Test (the official MURA `valid` wrist studies: {{N_TEST_IMAGES}} images, {{N_TEST_PATIENTS}} patients) is touched only for reporting.
+- **Three roles for three splits.** Train fits the model. Validation (386 images, held-out *patients* from the official train set) chooses regularisation (classical models), stops training (ResNet) and chooses thresholds. Test (the official MURA `valid` wrist studies: 659 images, 207 patients) is touched only for reporting.
 - **One harness.** Every model goes through `eval_harness.run_eval`, so the comparison table is generated, not typed.
 - **One preprocessing contract.** The evaluation transform in `config.py` (grayscale→3 channels, resize 224, tensor, ImageNet normalisation) is the one the app uses, and the app asserts it at startup.
 
 ## 2. Why each metric was chosen
 
-Positive class = *Abnormal*. Class balance: {{TRAIN_PCT_ABNORMAL}} abnormal in train, {{TEST_PCT_ABNORMAL}} in test.
+Positive class = *Abnormal*. Class balance: 39.5% abnormal in train, 44.8% in test.
 
 | Metric | Question it answers | Why it is here |
 |---|---|---|
@@ -41,15 +41,15 @@ Accuracy counts all errors equally and is dominated by the larger class. A model
 
 The default 0.5 is arbitrary. `src/operating_point.py`:
 
-1. chooses, **on validation only**, the highest threshold with recall ≥ **{{OP_RECALL_TARGET}}**;
+1. chooses, **on validation only**, the highest threshold with recall ≥ **0.95**;
 2. freezes it and reports test recall, precision, specificity and the fraction flagged, next to the 0.5 default;
 3. reports whether the target was **actually met on test**. Selecting on validation does not guarantee it transfers, and with a small test set the recall estimate itself is noisy.
 
-Result for the ResNet: threshold {{OP_THRESHOLD}}; test recall {{OP_TEST_RECALL}} at precision {{OP_TEST_PRECISION}} (vs {{OP_TEST_RECALL_AT_05}} / {{OP_TEST_PRECISION_AT_05}} at 0.5).
+Result for the ResNet: threshold 0.064; test recall 0.963 at precision 0.536 (vs 0.536 / 0.898 at 0.5).
 
 ## 5. Calibration and abstention
 
-`src/calibration.py` draws a reliability diagram, computes ECE ({{ECE}} for the ResNet), and evaluates the abstention band [{{ABSTAIN_LOW}}, {{ABSTAIN_HIGH}}): **{{ABSTAIN_FRACTION}}** of test images are handed to a human; among images auto-cleared as normal, **{{AUTO_CLEAR_MISS_RATE}}** are abnormal. Metrics on the auto-decided subset are computed with the same per-class definitions. Abstention trades coverage for reliability; it is not free, because every abstained image is human work.
+`src/calibration.py` draws a reliability diagram, computes ECE (0.116 for the ResNet), and evaluates the abstention band [0.064, 0.65): **58.7%** of test images are handed to a human; among images auto-cleared as normal, **8.5%** are abnormal. Metrics on the auto-decided subset are computed with the same per-class definitions. Abstention trades coverage for reliability; it is not free, because every abstained image is human work.
 
 ## 6. Error analysis
 
@@ -61,5 +61,5 @@ The notebook (section A6) displays the most *confident* mistakes of each kind (f
 - **Image-level, not study-level:** a clinical read uses several views; aggregation across views was not evaluated.
 - **Coarse, noisy label:** "abnormal" includes fractures, hardware and degenerative change, and each image inherits its study's label, so some "abnormal" images show nothing abnormal.
 - **No reader study:** nothing here compares the model with clinicians, or measures how clinicians behave when shown a score.
-- **Small-sample uncertainty:** the test set is small ({{N_TEST_IMAGES}} images from {{N_TEST_PATIENTS}} patients); no confidence intervals are computed, so small differences between models should not be over-read.
+- **Small-sample uncertainty:** the test set is small (659 images from 207 patients); no confidence intervals are computed, so small differences between models should not be over-read.
 - **Does not measure harm:** it cannot tell us whether the tool would improve or worsen outcomes.

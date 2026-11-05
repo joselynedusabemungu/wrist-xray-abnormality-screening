@@ -30,25 +30,25 @@ This is an end-to-end, reproducible prototype that classifies single **wrist** r
 
 ## 4. Results
 
-> Numbers below are **filled from real outputs**, never typed by hand. Source: `outputs/model_comparison.csv`, produced by `make compare` and inserted by `make fill-docs`. Test set = official MURA `valid` wrist studies ({{N_TEST_IMAGES}} images from {{N_TEST_PATIENTS}} patients, {{TEST_PCT_ABNORMAL}} abnormal); threshold 0.5; positive class = Abnormal.
+> Numbers below are **filled from real outputs**, never typed by hand. Source: `outputs/model_comparison.csv`, produced by `make compare` and inserted by `make fill-docs`. Test set = official MURA `valid` wrist studies (659 images from 207 patients, 44.8% abnormal); threshold 0.5; positive class = Abnormal.
 
 | Model | Accuracy | Precision (Abn.) | Recall (Abn.) | F1 (Abn.) | AUC | Train time (s) | Inference (ms/img) |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| Grayscale pixels + logistic regression | {{GRAYSCALE_ACCURACY}} | {{GRAYSCALE_PRECISION}} | {{GRAYSCALE_RECALL}} | {{GRAYSCALE_F1}} | {{GRAYSCALE_AUC}} | {{GRAYSCALE_TRAIN_TIME}} | {{GRAYSCALE_INFERENCE_MS}} |
-| HOG features + logistic regression | {{HOG_ACCURACY}} | {{HOG_PRECISION}} | {{HOG_RECALL}} | {{HOG_F1}} | {{HOG_AUC}} | {{HOG_TRAIN_TIME}} | {{HOG_INFERENCE_MS}} |
-| ResNet18 (ImageNet transfer learning) | {{RESNET_ACCURACY}} | {{RESNET_PRECISION}} | {{RESNET_RECALL}} | {{RESNET_F1}} | {{RESNET_AUC}} | {{RESNET_TRAIN_TIME}} | {{RESNET_INFERENCE_MS}} |
+| Grayscale pixels + logistic regression | 0.548 | 0.495 | 0.498 | 0.497 | 0.570 | 122 | 6.6 |
+| HOG features + logistic regression | 0.683 | 0.657 | 0.610 | 0.633 | 0.710 | 9 | 4.9 |
+| ResNet18 (ImageNet transfer learning) | 0.765 | 0.898 | 0.536 | 0.671 | 0.847 | 536 | 22.3 |
 
-Training set: {{N_TRAIN_IMAGES}} images from {{N_TRAIN_PATIENTS}} patients ({{TRAIN_PCT_ABNORMAL}} abnormal); validation: {{N_VAL_IMAGES}} images. Latency is end-to-end (file read to probability) on the machine that ran the pipeline.
+Training set: 2,217 images from 740 patients (39.5% abnormal); validation: 386 images. Latency is end-to-end (file read to probability) on the machine that ran the pipeline.
 
 ## 5. The Tradeoff That Matters
 
-The default 0.5 threshold is not a clinical decision, it is an arbitrary number. For the ResNet at 0.5, test recall on abnormal images is **{{OP_TEST_RECALL_AT_05}}** at precision **{{OP_TEST_PRECISION_AT_05}}**.
+The default 0.5 threshold is not a clinical decision, it is an arbitrary number. For the ResNet at 0.5, test recall on abnormal images is **0.536** at precision **0.898**.
 
-If a missed abnormality is the expensive error, we instead choose, **on the validation split only**, the highest threshold that reaches recall ≥ **{{OP_RECALL_TARGET}}**. That threshold is **{{OP_THRESHOLD}}**. Frozen and applied to the test split it gives recall **{{OP_TEST_RECALL}}** and precision **{{OP_TEST_PRECISION}}**, and it flags **{{OP_TEST_FLAGGED_FRACTION}}** of all images. The drop in precision between those two operating points is the price of safety: it is extra clinician review time spent on normal studies. Whether that price is acceptable is a product and clinical decision, not an ML one.
+If a missed abnormality is the expensive error, we instead choose, **on the validation split only**, the highest threshold that reaches recall ≥ **0.95**. That threshold is **0.064**. Frozen and applied to the test split it gives recall **0.963** and precision **0.536**, and it flags **80.4%** of all images. The drop in precision between those two operating points is the price of safety: it is extra clinician review time spent on normal studies. Whether that price is acceptable is a product and clinical decision, not an ML one.
 
-The simple baseline gets the same treatment. At the same recall target, HOG + logistic regression reaches recall **{{HOG_OP_TEST_RECALL}}** at precision **{{HOG_OP_TEST_PRECISION}}** on test. If that is close to the ResNet, a simpler, cheaper, more interpretable model is the better engineering choice; the deep network has to earn its complexity with numbers.
+The simple baseline gets the same treatment. At the same recall target, HOG + logistic regression reaches recall **0.868** at precision **0.507** on test. If that is close to the ResNet, a simpler, cheaper, more interpretable model is the better engineering choice; the deep network has to earn its complexity with numbers.
 
-The model's uncertain middle is handed to a human instead of being decided. With the band [{{ABSTAIN_LOW}}, {{ABSTAIN_HIGH}}), **{{ABSTAIN_FRACTION}}** of test images are abstained on, and **{{AUTO_CLEAR_MISS_RATE}}** of the images the system would auto-clear are in fact abnormal (calibration error: ECE {{ECE}}). Details: [`docs/EVALUATION.md`](docs/EVALUATION.md), [`docs/DECISION.md`](docs/DECISION.md).
+The model's uncertain middle is handed to a human instead of being decided. With the band [0.064, 0.65), **58.7%** of test images are abstained on, and **8.5%** of the images the system would auto-clear are in fact abnormal (calibration error: ECE 0.116). Details: [`docs/EVALUATION.md`](docs/EVALUATION.md), [`docs/DECISION.md`](docs/DECISION.md).
 
 ## 6. What I Got Wrong / What I'd Do Differently
 
