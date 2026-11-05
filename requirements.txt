@@ -1,5 +1,7 @@
-torch --index-url https://pytorch.org
-torchvision --index-url https://pytorch.org
+--index-url https://pytorch.org
+
+torch
+torchvision
 numpy==1.26.4
 pandas==2.2.3
 Pillow==11.0.0
